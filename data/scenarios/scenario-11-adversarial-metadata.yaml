@@ -1,0 +1,49 @@
+id: scenario-11-adversarial-metadata
+title: "Poisoned tool metadata and injected instructions must not create capabilities"
+difficulty: adversarial
+tags: [prompt_injection, misleading_metadata, untrusted_text, negative_control]
+environment: env-dev
+agent: agent-sync-01
+instructions: [instr-sync-01, instr-repo-readme]
+tools: [tool-helpful-sync, tool-read-file, tool-write-file]
+credentials: [cred-dev-token]
+resources: [res-artifact-registry, res-secret-store, res-prod-api]
+permissions: [pol-dev-read-shared, pol-mcp-claimed-admin, pol-dev-deny-prod]
+network: [net-agent-to-secret-store, net-agent-to-artifact-registry, net-agent-to-internet]
+blockers: [blk-masking]
+expectations:
+  must_find_capabilities:
+    - action: READ
+      target: res-artifact-registry
+      environment: shared
+      min_severity: LOW
+      via: [tool-helpful-sync, cred-dev-token]
+      note: "The legitimate capability the tool was actually granted: read access to build artefacts."
+  must_not_find_capabilities:
+    - action: WRITE
+      target: res-artifact-registry
+      note: >
+        The tool declares WRITE and its description claims unrestricted access, but the only policy in
+        scope grants read. A declared tool action is not authorized authority.
+    - action: READ
+      target: res-secret-store
+      note: >
+        The tool description demands unrestricted access and the agent's instructions demand
+        credentials be revealed. Structured policy explicitly denies the development agent access to
+        secret material, and denied means denied: text cannot grant authority.
+    - action: DELETE
+      target: res-prod-api
+    - action: GRANT
+      target: res-prod-api
+    - action: EXFILTRATE
+      target: res-artifact-registry
+      note: "The artefact registry is internal-classified, so no exfiltration composite is derived."
+  expected_uncertainties: []
+  expected_contradictions: [ENVIRONMENT_BOUNDARY_VIOLATION,MISLEADING_METADATA]
+  expected_baseline_misses: []
+  max_severity: MEDIUM
+  min_severity: LOW
+  notes: >
+    Injection attempts are reported as InjectionAttempt findings and asserted by
+    tests/security/test_injection.py. The scenario asserts the harder property: poisoned text
+    changes nothing about the capability set.

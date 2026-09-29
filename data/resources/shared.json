@@ -1,0 +1,68 @@
+{
+  "resources": [
+    {
+      "id": "res-git-repo",
+      "name": "app-repository",
+      "type": "repository",
+      "environment": null,
+      "data_class": "confidential",
+      "criticality": 2,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["versioning"], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "notes_untrusted": "Source repository for the application. Conventions are documented in the repository, so repository text must be treated as untrusted input.",
+      "source": {"kind": "inventory", "ref": "data/resources/shared.json#res-git-repo", "trusted": true}
+    },
+    {
+      "id": "res-ci-pipeline",
+      "name": "ci-pipeline",
+      "type": "pipeline",
+      "environment": "shared",
+      "data_class": "internal",
+      "criticality": 2,
+      "recovery": {"recoverability": "unknown", "mechanisms": [], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "notes_untrusted": "Shared CI pipeline. It holds the deployment token and reports the deployment endpoints it knows about.",
+      "source": {"kind": "inventory", "ref": "data/resources/shared.json#res-ci-pipeline", "trusted": true}
+    },
+    {
+      "id": "res-artifact-registry",
+      "name": "artifact-registry",
+      "type": "bucket",
+      "environment": "shared",
+      "data_class": "internal",
+      "criticality": 2,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["versioning"], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/shared.json#res-artifact-registry", "trusted": true}
+    },
+    {
+      "id": "res-metadata-endpoint",
+      "name": "internal-metadata-endpoint",
+      "type": "endpoint",
+      "environment": "shared",
+      "data_class": "secret_material",
+      "criticality": 2,
+      "recovery": {"recoverability": "unknown", "mechanisms": [], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "notes_untrusted": "Internal metadata service. It can mint short-lived credentials for workloads that can reach it.",
+      "source": {"kind": "inventory", "ref": "data/resources/shared.json#res-metadata-endpoint", "trusted": true}
+    },
+    {
+      "id": "res-secret-store",
+      "name": "shared-secret-store",
+      "type": "secret_store",
+      "environment": "shared",
+      "data_class": "secret_material",
+      "criticality": 3,
+      "recovery": {"recoverability": "difficult", "mechanisms": ["snapshot"], "latest_recovery_point": "PT12H", "mean_time_to_recover": null, "evidence": []},
+      "notes_untrusted": "Secret store holding deployment and break-glass credentials by reference.",
+      "source": {"kind": "inventory", "ref": "data/resources/shared.json#res-secret-store", "trusted": true}
+    },
+    {
+      "id": "res-logs-store",
+      "name": "logs-store",
+      "type": "bucket",
+      "environment": "shared",
+      "data_class": "confidential",
+      "criticality": 2,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["versioning"], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/shared.json#res-logs-store", "trusted": true}
+    }
+  ]
+}

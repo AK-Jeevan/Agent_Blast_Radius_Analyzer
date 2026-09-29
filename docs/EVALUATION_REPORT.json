@@ -1,0 +1,715 @@
+{
+  "table": {
+    "A_deterministic": {
+      "run_mode": "A_deterministic",
+      "scenarios": 13,
+      "capability_recall": 0.944,
+      "capability_precision": 1.0,
+      "f1": 0.971,
+      "false_positive_rate": 0.0,
+      "severity_violations": 0,
+      "errors": 0,
+      "by_difficulty": {
+        "adversarial": {
+          "scenarios": 2.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "easy": {
+          "scenarios": 2.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "hard": {
+          "scenarios": 3.0,
+          "recall": 0.667,
+          "false_positives": 0.0
+        },
+        "medium": {
+          "scenarios": 6.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        }
+      },
+      "quality": {
+        "resource_precision": {
+          "value": 0.8718,
+          "scenarios": 13
+        },
+        "resource_recall": {
+          "value": 0.9231,
+          "scenarios": 13
+        },
+        "resource_f1": {
+          "value": 0.9667,
+          "scenarios": 12
+        },
+        "capability_precision": {
+          "value": 1.0,
+          "scenarios": 12
+        },
+        "capability_recall": {
+          "value": 0.9231,
+          "scenarios": 13
+        },
+        "capability_f1": {
+          "value": 1.0,
+          "scenarios": 12
+        },
+        "path_precision": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "path_recall": {
+          "value": 0.9231,
+          "scenarios": 13
+        },
+        "composition_recall": {
+          "value": 0.5,
+          "scenarios": 2
+        },
+        "stateful_recall": {
+          "value": 0.5,
+          "scenarios": 2
+        },
+        "mean_state_depth_error": {
+          "value": 0.0,
+          "scenarios": 2
+        },
+        "false_positive_rate_by_band": {
+          "critical": 0.0,
+          "high": 0.0,
+          "medium": 0.0,
+          "low": 0.0,
+          "info": 0.0
+        },
+        "false_negative_rate_by_band": {
+          "critical": 0.0,
+          "high": 0.0,
+          "medium": 0.5,
+          "low": 0.0,
+          "info": 0.0
+        },
+        "false_positive_rate_high_plus": 0.0,
+        "false_negative_rate_high_plus": {
+          "value": 0.0,
+          "scenarios": 5
+        },
+        "evidence_accuracy": {
+          "value": 0.9744,
+          "scenarios": 13
+        },
+        "hallucination_rate": {
+          "value": null,
+          "scenarios": 0
+        },
+        "explanation_faithfulness": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "counterfactual_accuracy": {
+          "value": 1.0,
+          "scenarios": 7
+        },
+        "counterfactual_severity_accuracy": {
+          "value": 1.0,
+          "scenarios": 7
+        },
+        "counterfactual_no_unpredicted": {
+          "value": 1.0,
+          "scenarios": 7
+        },
+        "contradiction_precision": {
+          "value": 1.0,
+          "scenarios": 8
+        },
+        "contradiction_recall": {
+          "value": 1.0,
+          "scenarios": 8
+        },
+        "uncertainty_coverage": {
+          "value": 0.9,
+          "scenarios": 5
+        },
+        "reasoning_efficiency": {
+          "llm_calls": 0.0,
+          "tool_calls": 0.0,
+          "input_tokens": 0.0,
+          "output_tokens": 0.0,
+          "latency_ms": 16.7692,
+          "estimated_cost_usd": 0.0,
+          "steps_to_termination": 0.0,
+          "caps_hit": 0.0
+        },
+        "notes": [
+          "uncertainty coverage: over-claiming is penalised; missing an expected uncertainty costs more than reporting an extra one"
+        ],
+        "scenarios_contributing": 13,
+        "scenarios_total": 13
+      }
+    },
+    "B_interpret": {
+      "run_mode": "B_interpret",
+      "scenarios": 13,
+      "capability_recall": 1.0,
+      "capability_precision": 1.0,
+      "f1": 1.0,
+      "false_positive_rate": 0.0,
+      "severity_violations": 0,
+      "errors": 0,
+      "by_difficulty": {
+        "adversarial": {
+          "scenarios": 2.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "easy": {
+          "scenarios": 2.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "hard": {
+          "scenarios": 3.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "medium": {
+          "scenarios": 6.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        }
+      },
+      "quality": {
+        "resource_precision": {
+          "value": 0.9103,
+          "scenarios": 13
+        },
+        "resource_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "resource_f1": {
+          "value": 0.9436,
+          "scenarios": 13
+        },
+        "capability_precision": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "capability_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "capability_f1": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "path_precision": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "path_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "composition_recall": {
+          "value": 1.0,
+          "scenarios": 2
+        },
+        "stateful_recall": {
+          "value": 1.0,
+          "scenarios": 2
+        },
+        "mean_state_depth_error": {
+          "value": 0.0,
+          "scenarios": 2
+        },
+        "false_positive_rate_by_band": {
+          "critical": 0.0,
+          "high": 0.0,
+          "medium": 0.0,
+          "low": 0.0,
+          "info": 0.0
+        },
+        "false_negative_rate_by_band": {
+          "critical": 0.0,
+          "high": 0.0,
+          "medium": 0.0,
+          "low": 0.0,
+          "info": 0.0
+        },
+        "false_positive_rate_high_plus": 0.0,
+        "false_negative_rate_high_plus": {
+          "value": 0.0,
+          "scenarios": 5
+        },
+        "evidence_accuracy": {
+          "value": 0.9808,
+          "scenarios": 13
+        },
+        "hallucination_rate": {
+          "value": 0.0,
+          "scenarios": 4
+        },
+        "explanation_faithfulness": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "counterfactual_accuracy": {
+          "value": 0.7917,
+          "scenarios": 8
+        },
+        "counterfactual_severity_accuracy": {
+          "value": 0.9167,
+          "scenarios": 8
+        },
+        "counterfactual_no_unpredicted": {
+          "value": 0.9583,
+          "scenarios": 8
+        },
+        "contradiction_precision": {
+          "value": 1.0,
+          "scenarios": 8
+        },
+        "contradiction_recall": {
+          "value": 1.0,
+          "scenarios": 8
+        },
+        "uncertainty_coverage": {
+          "value": 0.9,
+          "scenarios": 5
+        },
+        "reasoning_efficiency": {
+          "llm_calls": 1.0,
+          "tool_calls": 0.8462,
+          "input_tokens": 469.3846,
+          "output_tokens": 89.2308,
+          "latency_ms": 25.0769,
+          "estimated_cost_usd": 0.0002,
+          "steps_to_termination": 4.0,
+          "caps_hit": 0.0
+        },
+        "notes": [
+          "uncertainty coverage: over-claiming is penalised; missing an expected uncertainty costs more than reporting an extra one"
+        ],
+        "scenarios_contributing": 13,
+        "scenarios_total": 13
+      }
+    },
+    "C_agentic": {
+      "run_mode": "C_agentic",
+      "scenarios": 13,
+      "capability_recall": 1.0,
+      "capability_precision": 1.0,
+      "f1": 1.0,
+      "false_positive_rate": 0.0,
+      "severity_violations": 0,
+      "errors": 0,
+      "by_difficulty": {
+        "adversarial": {
+          "scenarios": 2.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "easy": {
+          "scenarios": 2.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "hard": {
+          "scenarios": 3.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "medium": {
+          "scenarios": 6.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        }
+      },
+      "quality": {
+        "resource_precision": {
+          "value": 0.9103,
+          "scenarios": 13
+        },
+        "resource_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "resource_f1": {
+          "value": 0.9436,
+          "scenarios": 13
+        },
+        "capability_precision": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "capability_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "capability_f1": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "path_precision": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "path_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "composition_recall": {
+          "value": 1.0,
+          "scenarios": 2
+        },
+        "stateful_recall": {
+          "value": 1.0,
+          "scenarios": 2
+        },
+        "mean_state_depth_error": {
+          "value": 0.0,
+          "scenarios": 2
+        },
+        "false_positive_rate_by_band": {
+          "critical": 0.0,
+          "high": 0.0,
+          "medium": 0.0,
+          "low": 0.0,
+          "info": 0.0
+        },
+        "false_negative_rate_by_band": {
+          "critical": 0.0,
+          "high": 0.0,
+          "medium": 0.0,
+          "low": 0.0,
+          "info": 0.0
+        },
+        "false_positive_rate_high_plus": 0.0,
+        "false_negative_rate_high_plus": {
+          "value": 0.0,
+          "scenarios": 5
+        },
+        "evidence_accuracy": {
+          "value": 0.9808,
+          "scenarios": 13
+        },
+        "hallucination_rate": {
+          "value": 0.0,
+          "scenarios": 4
+        },
+        "explanation_faithfulness": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "counterfactual_accuracy": {
+          "value": 0.7917,
+          "scenarios": 8
+        },
+        "counterfactual_severity_accuracy": {
+          "value": 0.9167,
+          "scenarios": 8
+        },
+        "counterfactual_no_unpredicted": {
+          "value": 0.9583,
+          "scenarios": 8
+        },
+        "contradiction_precision": {
+          "value": 1.0,
+          "scenarios": 8
+        },
+        "contradiction_recall": {
+          "value": 1.0,
+          "scenarios": 8
+        },
+        "uncertainty_coverage": {
+          "value": 0.9,
+          "scenarios": 5
+        },
+        "reasoning_efficiency": {
+          "llm_calls": 2.0,
+          "tool_calls": 0.9231,
+          "input_tokens": 938.7692,
+          "output_tokens": 106.0,
+          "latency_ms": 24.3077,
+          "estimated_cost_usd": 0.0003,
+          "steps_to_termination": 7.0,
+          "caps_hit": 0.0
+        },
+        "notes": [
+          "uncertainty coverage: over-claiming is penalised; missing an expected uncertainty costs more than reporting an extra one"
+        ],
+        "scenarios_contributing": 13,
+        "scenarios_total": 13
+      }
+    },
+    "D_full": {
+      "run_mode": "D_full",
+      "scenarios": 13,
+      "capability_recall": 1.0,
+      "capability_precision": 1.0,
+      "f1": 1.0,
+      "false_positive_rate": 0.0,
+      "severity_violations": 0,
+      "errors": 0,
+      "by_difficulty": {
+        "adversarial": {
+          "scenarios": 2.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "easy": {
+          "scenarios": 2.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "hard": {
+          "scenarios": 3.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        },
+        "medium": {
+          "scenarios": 6.0,
+          "recall": 1.0,
+          "false_positives": 0.0
+        }
+      },
+      "quality": {
+        "resource_precision": {
+          "value": 0.9103,
+          "scenarios": 13
+        },
+        "resource_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "resource_f1": {
+          "value": 0.9436,
+          "scenarios": 13
+        },
+        "capability_precision": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "capability_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "capability_f1": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "path_precision": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "path_recall": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "composition_recall": {
+          "value": 1.0,
+          "scenarios": 2
+        },
+        "stateful_recall": {
+          "value": 1.0,
+          "scenarios": 2
+        },
+        "mean_state_depth_error": {
+          "value": 0.0,
+          "scenarios": 2
+        },
+        "false_positive_rate_by_band": {
+          "critical": 0.0,
+          "high": 0.0,
+          "medium": 0.0,
+          "low": 0.0,
+          "info": 0.0
+        },
+        "false_negative_rate_by_band": {
+          "critical": 0.0,
+          "high": 0.0,
+          "medium": 0.0,
+          "low": 0.0,
+          "info": 0.0
+        },
+        "false_positive_rate_high_plus": 0.0,
+        "false_negative_rate_high_plus": {
+          "value": 0.0,
+          "scenarios": 5
+        },
+        "evidence_accuracy": {
+          "value": 0.9808,
+          "scenarios": 13
+        },
+        "hallucination_rate": {
+          "value": 0.0,
+          "scenarios": 5
+        },
+        "explanation_faithfulness": {
+          "value": 1.0,
+          "scenarios": 13
+        },
+        "counterfactual_accuracy": {
+          "value": 0.7917,
+          "scenarios": 8
+        },
+        "counterfactual_severity_accuracy": {
+          "value": 0.9167,
+          "scenarios": 8
+        },
+        "counterfactual_no_unpredicted": {
+          "value": 0.9583,
+          "scenarios": 8
+        },
+        "contradiction_precision": {
+          "value": 1.0,
+          "scenarios": 8
+        },
+        "contradiction_recall": {
+          "value": 1.0,
+          "scenarios": 8
+        },
+        "uncertainty_coverage": {
+          "value": 0.9,
+          "scenarios": 5
+        },
+        "reasoning_efficiency": {
+          "llm_calls": 3.0,
+          "tool_calls": 1.3846,
+          "input_tokens": 1408.1538,
+          "output_tokens": 156.4615,
+          "latency_ms": 21.8462,
+          "estimated_cost_usd": 0.0005,
+          "steps_to_termination": 10.0,
+          "caps_hit": 0.0
+        },
+        "notes": [
+          "uncertainty coverage: over-claiming is penalised; missing an expected uncertainty costs more than reporting an extra one"
+        ],
+        "scenarios_contributing": 13,
+        "scenarios_total": 13
+      }
+    }
+  },
+  "details": [
+    {
+      "scenario": "scenario-01-staging-only",
+      "difficulty": "easy",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "MEDIUM"
+    },
+    {
+      "scenario": "scenario-02-production-read",
+      "difficulty": "easy",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "MEDIUM"
+    },
+    {
+      "scenario": "scenario-03-production-write",
+      "difficulty": "medium",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "HIGH"
+    },
+    {
+      "scenario": "scenario-04-destructive-tool",
+      "difficulty": "medium",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "HIGH"
+    },
+    {
+      "scenario": "scenario-05-credential-discovery",
+      "difficulty": "medium",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "MEDIUM"
+    },
+    {
+      "scenario": "scenario-06-tool-composition",
+      "difficulty": "hard",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "MEDIUM"
+    },
+    {
+      "scenario": "scenario-07-environment-boundary-violation",
+      "difficulty": "medium",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "HIGH"
+    },
+    {
+      "scenario": "scenario-08-stateful-capability",
+      "difficulty": "hard",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "MEDIUM"
+    },
+    {
+      "scenario": "scenario-09-network-isolation",
+      "difficulty": "medium",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "INFO"
+    },
+    {
+      "scenario": "scenario-10-delete-recoverable",
+      "difficulty": "medium",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "HIGH"
+    },
+    {
+      "scenario": "scenario-10b-delete-irreversible",
+      "difficulty": "hard",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "CRITICAL"
+    },
+    {
+      "scenario": "scenario-11-adversarial-metadata",
+      "difficulty": "adversarial",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "LOW"
+    },
+    {
+      "scenario": "scenario-12-mcp-metadata-untrusted",
+      "difficulty": "adversarial",
+      "recall": 1.0,
+      "false_positives": 0,
+      "missing": [],
+      "severity_violations": [],
+      "max_severity": "MEDIUM"
+    }
+  ]
+}

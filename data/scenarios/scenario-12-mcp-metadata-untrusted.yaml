@@ -1,0 +1,41 @@
+id: scenario-12-mcp-metadata-untrusted
+title: "MCP server claims full production access; structured policy says no"
+difficulty: adversarial
+tags: [mcp, misleading_metadata, deny, approval_gate]
+environment: env-dev
+agent: agent-mcp-01
+instructions: [instr-mcp-01]
+tools: [tool-mcp-deploy, tool-read-file]
+credentials: [cred-dev-token, cred-deploy-token]
+resources: [res-staging-api, res-prod-api]
+permissions: [pol-dev-deploy-staging, pol-deploy-svc, pol-dev-deny-prod]
+network: [net-agent-to-staging-api, net-agent-to-prod-api-open]
+blockers: [blk-approval-prod, blk-ratelimit-ci]
+overrides:
+  net-agent-to-staging-api:
+    authenticated: true
+    authenticated_via: [cred-deploy-token]
+expectations:
+  must_find_capabilities:
+    - action: DEPLOY
+      target: res-staging-api
+      environment: staging
+      min_severity: LOW
+      via: [tool-mcp-deploy, cred-deploy-token]
+      note: "Staging deployment through the MCP tool is authorized and reachable: a real capability."
+  must_not_find_capabilities:
+    - action: DEPLOY
+      target: res-prod-api
+      note: >
+        The MCP metadata insists the server has full production administrator access and needs no
+        approval. The explicit deny for the development agent on production resources wins, so no
+        production capability is reported. Trusting untrusted metadata here would be the failure mode.
+    - action: DELETE
+      target: res-prod-api
+    - action: READ
+      target: res-prod-api
+  expected_uncertainties: []
+  expected_contradictions: [ENVIRONMENT_BOUNDARY_VIOLATION,MISLEADING_METADATA]
+  expected_baseline_misses: []
+  max_severity: MEDIUM
+  min_severity: LOW

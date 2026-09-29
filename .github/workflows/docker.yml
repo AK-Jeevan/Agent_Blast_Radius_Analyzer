@@ -1,0 +1,41 @@
+# =============================================================================
+# Container build: every push gets an image; tags get versioned tags too.
+# =============================================================================
+name: docker
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ startsWith(github.ref, 'refs/tags/') }}
+          tags: |
+            agent-blast-radius-analyzer:latest
+            agent-blast-radius-analyzer:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Verify the image runs the analyzer read-only
+        run: |
+          docker build -t analyzer:verify .
+          docker run --rm analyzer:verify python -c "from app.main import app; print('api import ok')"
+          docker run --rm analyzer:verify python -m pytest tests/unit/test_architecture.py -q

@@ -1,0 +1,73 @@
+{
+  "agents": [
+    {
+      "id": "agent-coding-01",
+      "name": "coding-agent-01",
+      "identity": "ident-dev-agent",
+      "environment": "development",
+      "instructions": "instr-coding-01",
+      "tools": [
+        "tool-read-file",
+        "tool-write-file",
+        "tool-execute",
+        "tool-read-db",
+        "tool-write-db",
+        "tool-deploy",
+        "tool-rollback",
+        "tool-read-secret",
+        "tool-list-resources",
+        "tool-query-cloud",
+        "tool-read-env",
+        "tool-http-request"
+      ],
+      "credentials_present": ["cred-dev-token"],
+      "declared_purpose_untrusted": "General-purpose software engineering assistant used for development tasks.",
+      "source": {"kind": "config", "ref": "data/agents/agents.json#agent-coding-01", "trusted": true}
+    },
+    {
+      "id": "agent-staging-01",
+      "name": "staging-agent-01",
+      "identity": "ident-staging-agent",
+      "environment": "staging",
+      "instructions": "instr-staging-01",
+      "tools": ["tool-read-file", "tool-read-db", "tool-write-db", "tool-deploy", "tool-rollback", "tool-read-env"],
+      "credentials_present": ["cred-staging-token"],
+      "declared_purpose_untrusted": "Pre-release verification assistant restricted to the staging environment.",
+      "source": {"kind": "config", "ref": "data/agents/agents.json#agent-staging-01", "trusted": true}
+    },
+    {
+      "id": "agent-prod-read-01",
+      "name": "prod-read-agent-01",
+      "identity": "ident-prod-readonly",
+      "environment": "production",
+      "instructions": "instr-prod-read-01",
+      "tools": ["tool-read-db", "tool-read-secret"],
+      "credentials_present": ["cred-prod-read-token"],
+      "declared_purpose_untrusted": "Read-only reporting assistant for production metrics.",
+      "source": {"kind": "config", "ref": "data/agents/agents.json#agent-prod-read-01", "trusted": true}
+    },
+    {
+      "id": "agent-sync-01",
+      "name": "sync-agent-01",
+      "identity": "ident-dev-agent",
+      "environment": "development",
+      "instructions": "instr-sync-01",
+      "tools": ["tool-helpful-sync", "tool-read-file", "tool-write-file"],
+      "credentials_present": ["cred-dev-token"],
+      "declared_purpose_untrusted": "File synchronisation assistant.",
+      "source": {"kind": "config", "ref": "data/agents/agents.json#agent-sync-01", "trusted": false}
+    },
+    {
+      "id": "agent-mcp-01",
+      "name": "mcp-deployer-agent-01",
+      "identity": "ident-dev-agent",
+      "environment": "development",
+      "instructions": "instr-mcp-01",
+      "tools": ["tool-mcp-deploy", "tool-read-file"],
+      "mcp_servers": ["mcp-deployer"],
+      "credentials_present": ["cred-dev-token"],
+      "declared_purpose_untrusted": "Agent wired to a third-party MCP deployment server.",
+      "source": {"kind": "config", "ref": "data/agents/agents.json#agent-mcp-01", "trusted": false}
+    }
+  ]
+}

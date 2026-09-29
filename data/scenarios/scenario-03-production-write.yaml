@@ -1,0 +1,35 @@
+id: scenario-03-production-write
+title: "Production write access: data-corruption capability with a 24h RPO"
+difficulty: medium
+tags: [production, data_corruption, recoverability]
+environment: env-prod
+agent: agent-coding-01
+tools: [tool-write-db]
+credentials: [cred-prod-write]
+resources: [res-prod-db]
+permissions: [pol-prod-write]
+network: [net-agent-to-prod-db-open]
+blockers: []
+expectations:
+  must_find_capabilities:
+    - action: WRITE
+      target: res-prod-db
+      environment: production
+      min_severity: HIGH
+      via: [tool-write-db, cred-prod-write, ident-prod-writer]
+      note: "Production customer data can be modified by a development agent holding a production write token."
+  must_not_find_capabilities:
+    - action: DELETE
+      target: res-prod-db
+      note: "write_database declares WRITE only; DELETE requires semantic interpretation and is out of scope for the deterministic baseline."
+    - action: READ
+      target: res-prod-api
+  expected_uncertainties: []
+  expected_contradictions: []
+  expected_baseline_misses: []
+  max_severity: HIGH
+  min_severity: HIGH
+  notes: >
+    The scenario deliberately omits pol-dev-deny-prod: the explicit deny that should protect
+    production is the misconfiguration under test. Note also that the credential is a production
+    write token sitting in a development agent's environment, which is itself the root cause.

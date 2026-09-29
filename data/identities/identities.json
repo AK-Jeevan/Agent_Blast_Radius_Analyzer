@@ -1,0 +1,84 @@
+{
+  "identities": [
+    {
+      "id": "ident-dev-agent",
+      "type": "service_account",
+      "name": "developer-agent-role",
+      "environment": "development",
+      "provider": "aws",
+      "principal_ref": "arn:aws:iam::111111111111:role/developer-agent-role",
+      "trusted_for": ["read", "write", "create"],
+      "assumable_by": [],
+      "notes_untrusted": "Intended for local development work only.",
+      "source": {"kind": "config", "ref": "data/identities/identities.json#ident-dev-agent", "trusted": true}
+    },
+    {
+      "id": "ident-staging-agent",
+      "type": "service_account",
+      "name": "staging-agent-role",
+      "environment": "staging",
+      "provider": "aws",
+      "principal_ref": "arn:aws:iam::111111111111:role/staging-agent-role",
+      "trusted_for": ["read", "write", "deploy"],
+      "assumable_by": [],
+      "source": {"kind": "config", "ref": "data/identities/identities.json#ident-staging-agent", "trusted": true}
+    },
+    {
+      "id": "ident-deploy-svc",
+      "type": "service_account",
+      "name": "deploy-service-identity",
+      "environment": null,
+      "provider": "internal",
+      "principal_ref": "svc://deploy-service",
+      "trusted_for": ["deploy", "read:logs"],
+      "assumable_by": ["ident-dev-agent"],
+      "notes_untrusted": "Deployment service identity assumed through the CI deployment token.",
+      "source": {"kind": "iam_export", "ref": "data/identities/identities.json#ident-deploy-svc", "trusted": true}
+    },
+    {
+      "id": "ident-prod-readonly",
+      "type": "iam_role",
+      "name": "production-readonly-role",
+      "environment": "production",
+      "provider": "aws",
+      "principal_ref": "arn:aws:iam::222222222222:role/production-readonly",
+      "trusted_for": ["read"],
+      "assumable_by": [],
+      "source": {"kind": "iam_export", "ref": "data/identities/identities.json#ident-prod-readonly", "trusted": true}
+    },
+    {
+      "id": "ident-prod-writer",
+      "type": "iam_role",
+      "name": "production-writer-role",
+      "environment": "production",
+      "provider": "aws",
+      "principal_ref": "arn:aws:iam::222222222222:role/production-writer",
+      "trusted_for": ["read", "write"],
+      "assumable_by": [],
+      "source": {"kind": "iam_export", "ref": "data/identities/identities.json#ident-prod-writer", "trusted": true}
+    },
+    {
+      "id": "ident-prod-ops",
+      "type": "iam_role",
+      "name": "production-operations-role",
+      "environment": "production",
+      "provider": "aws",
+      "principal_ref": "arn:aws:iam::222222222222:role/production-operations",
+      "trusted_for": ["deploy", "read", "write", "delete", "grant", "rotate"],
+      "assumable_by": [],
+      "notes_untrusted": "Break-glass operations role; temporary credentials only.",
+      "source": {"kind": "iam_export", "ref": "data/identities/identities.json#ident-prod-ops", "trusted": true}
+    },
+    {
+      "id": "ident-github-app",
+      "type": "github_app",
+      "name": "code-review-app",
+      "environment": "development",
+      "provider": "github",
+      "principal_ref": "app://code-review",
+      "trusted_for": ["read"],
+      "assumable_by": [],
+      "source": {"kind": "config", "ref": "data/identities/identities.json#ident-github-app", "trusted": false}
+    }
+  ]
+}

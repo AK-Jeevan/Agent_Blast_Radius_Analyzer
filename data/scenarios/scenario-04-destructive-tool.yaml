@@ -1,0 +1,31 @@
+id: scenario-04-destructive-tool
+title: "Destructive lifecycle tool with an over-broad allow-list"
+difficulty: medium
+tags: [destructive, production, tool_scope]
+environment: env-prod
+agent: agent-coding-01
+tools: [tool-delete-resource]
+credentials: [cred-prod-admin]
+resources: [res-prod-storage, res-prod-db, res-prod-backups]
+permissions: [pol-prod-ops-admin, pol-prod-delete-storage]
+network: [net-agent-to-prod-storage-open]
+blockers: []
+expectations:
+  must_find_capabilities:
+    - action: DELETE
+      target: res-prod-storage
+      environment: production
+      min_severity: HIGH
+      via: [tool-delete-resource, cred-prod-admin, ident-prod-ops]
+      note: "The same tool used for dev cleanup can delete production storage."
+  must_not_find_capabilities:
+    - action: DELETE
+      target: res-prod-db
+      note: "The database is in the tool's allow-list but no route to it is in scope here, so the capability is not actionable."
+    - action: READ
+      target: res-prod-db
+  expected_uncertainties: [credential_expiry_unknown]
+  expected_contradictions: [AUTHORITY_UNREACHABLE]
+  expected_baseline_misses: []
+  max_severity: HIGH
+  min_severity: HIGH

@@ -1,0 +1,119 @@
+# =============================================================================
+# Test pipeline: lint -> unit -> integration -> security -> evaluation -> docker
+# Split into separate workflows so a failure names the phase that broke.
+# =============================================================================
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Ruff lint
+        run: ruff check app gradio_app tests scripts
+      - name: Ruff format check
+        run: ruff format --check app gradio_app tests scripts
+      - name: Static types
+        # The type check is a separate gate rather than part of ruff because it catches a different
+        # class of defect: annotations that make promises the code does not keep. Two real bugs
+        # reached review this way -- a function annotated as returning a dict that returned None, and
+        # an id built from a bound method instead of a content hash -- neither of which ruff or the
+        # test suite could see. `--ignore-missing-imports` keeps third-party stubs out of scope.
+        run: |
+          pip install "mypy>=1.11"
+          mypy app gradio_app tests scripts --ignore-missing-imports
+
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Unit tests
+        run: pytest -m unit -q
+      - name: Contract tests
+        run: pytest tests/unit/test_data_corpus.py -q
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Scenario integration tests
+        run: pytest -m integration -q
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Security invariants (injection, masking, read-only, evidence)
+        run: pytest -m security -q
+      - name: Architecture invariants (import direction, no subprocess)
+        run: pytest tests/unit/test_architecture.py -q
+      - name: No secrets committed
+        run: |
+          if git ls-files | grep -Ev '^Agent3/' | xargs -r grep -nEI '(nvapi-[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,})'; then
+            echo "::error::secret-like material committed to the repository"; exit 1
+          fi
+          echo "no committed secrets found"
+
+  evaluation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Deterministic baseline sweep (mode A)
+        # Pinned to the scripted client so CI is reproducible, offline, and free.
+        env:
+          LLM_PREFER_REAL: "false"
+        run: python scripts/run_eval.py --mode A_deterministic
+      - name: Full system sweep (mode D)
+        env:
+          LLM_PREFER_REAL: "false"
+        run: python scripts/run_eval.py --mode D_full
+      - name: Ablation table (A/B/C/D)
+        env:
+          LLM_PREFER_REAL: "false"
+        run: python scripts/run_eval.py --ablation
+      - name: Upload evaluation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evaluation-metrics
+          path: artifacts/eval/**
+          retention-days: 30

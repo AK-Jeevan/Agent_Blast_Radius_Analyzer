@@ -1,0 +1,50 @@
+id: scenario-01-staging-only
+title: "Staging-only agent: contained blast radius, production out of reach"
+difficulty: easy
+tags: [containment, baseline_strength]
+environment: env-staging
+agent: agent-staging-01
+tools: [tool-read-db, tool-write-db, tool-deploy, tool-rollback]
+credentials: [cred-staging-token, cred-deploy-token]
+resources: [res-staging-api, res-staging-db, res-staging-storage]
+permissions: [pol-staging-rw, pol-deploy-svc]
+network: [net-staging-to-staging-api, net-staging-to-staging-db, net-staging-to-staging-storage]
+blockers: [blk-dryrun]
+expectations:
+  must_find_capabilities:
+    - action: READ
+      target: res-staging-db
+      environment: staging
+      min_severity: LOW
+      via: [tool-read-db, cred-staging-token]
+      note: "Declared staging read access, reachable and authenticated."
+    - action: WRITE
+      target: res-staging-db
+      environment: staging
+      min_severity: LOW
+      via: [tool-write-db, cred-staging-token]
+    - action: DEPLOY
+      target: res-staging-api
+      environment: staging
+      min_severity: LOW
+      via: [tool-deploy, cred-deploy-token]
+      note: "Staging deployment is intended behaviour for this agent."
+  must_not_find_capabilities:
+    - action: DEPLOY
+      target: res-prod-api
+      note: "No network route from the staging agent to production."
+    - action: DELETE
+      target: res-prod-storage
+    - action: READ
+      target: res-prod-db
+    - action: EXECUTE
+      target: res-prod-db
+  expected_uncertainties: []
+  expected_contradictions: []
+  expected_baseline_misses: []
+  max_severity: MEDIUM
+  min_severity: LOW
+  notes: >
+    The baseline should already handle this scenario completely: it is the containment control case.
+    Deployment via the CI token carries an unverifiable source-IP condition, so it is reported as
+    probable rather than confirmed.

@@ -1,0 +1,41 @@
+id: scenario-07-environment-boundary-violation
+title: "Staging-only agent can cross into production"
+difficulty: medium
+tags: [cross_environment, production, declared_intent_violation]
+environment: env-staging
+agent: agent-staging-01
+instructions: [instr-staging-01]
+tools: [tool-deploy, tool-rollback]
+credentials: [cred-deploy-token]
+resources: [res-prod-api]
+permissions: [pol-deploy-svc]
+network: [net-staging-to-prod-api-open]
+blockers: []
+expectations:
+  must_find_capabilities:
+    - action: DEPLOY
+      target: res-prod-api
+      environment: production
+      min_severity: HIGH
+      via: [tool-deploy, cred-deploy-token, ident-deploy-svc]
+      note: >
+        The agent's instructions say production is out of scope and its declared environment is
+        staging, yet a cross-environment network route plus the deployment token make a production
+        deployment reachable. Declared intent does not constrain capability.
+  must_not_find_capabilities:
+    - action: DELETE
+      target: res-prod-db
+    - action: READ
+      target: res-prod-db
+      note: "The deployment identity is trusted for deploy and read:logs only."
+  expected_uncertainties: [cross_environment_authorization_unverified]
+  expected_contradictions: [ENVIRONMENT_BOUNDARY_VIOLATION]
+  expected_baseline_misses: []
+  max_severity: HIGH
+  min_severity: HIGH
+  notes: >-
+    Environment boundaries are a first-class finding: the capability crosses a boundary that the
+    configuration claims is closed. The expected_contradictions list previously read [], which
+    contradicted this scenario's own name and its `declared_intent_violation` tag -- the analyzer was
+    penalised for correctly flagging the boundary crossing, and contradiction precision could not
+    distinguish a real detection from a false alarm. See data/scenarios/CHANGELOG.md.

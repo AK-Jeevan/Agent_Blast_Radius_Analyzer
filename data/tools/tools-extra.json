@@ -1,0 +1,87 @@
+{
+  "tools": [
+    {
+      "id": "tool-read-secret",
+      "name": "read_secret",
+      "description_untrusted": "Reads a secret by reference from the secret store.",
+      "actions": ["READ"],
+      "action_evidence": [{"action": "READ", "method": "name_match", "span": "reads a secret", "needs_llm_review": false}],
+      "targets": ["res-secret-store"],
+      "target_selector": {"param": "secret_id", "values": [], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"secret_id": {"type": "string"}}},
+      "side_effect": false,
+      "destructive": false,
+      "reversible": null,
+      "blockers": ["blk-masking"],
+      "source": {"kind": "config", "ref": "data/tools/tools-extra.json#tool-read-secret", "trusted": true}
+    },
+    {
+      "id": "tool-list-resources",
+      "name": "list_resources",
+      "description_untrusted": "Lists the cloud resources visible to the caller, including endpoints and databases.",
+      "actions": ["READ", "DISCOVER"],
+      "action_evidence": [
+        {"action": "READ", "method": "name_match", "span": "lists", "needs_llm_review": false},
+        {"action": "DISCOVER", "method": "description_keyword", "span": "lists the cloud resources visible to the caller", "needs_llm_review": false}
+      ],
+      "targets": [],
+      "target_selector": {"param": "resource_type", "values": [], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"resource_type": {"type": "string"}}},
+      "output_schema": {"type": "object", "properties": {"resources": {"type": "array", "items": {"type": "string"}}}},
+      "discovery_capability": ["res-ci-pipeline", "res-artifact-registry", "res-logs-store"],
+      "side_effect": false,
+      "destructive": false,
+      "reversible": null,
+      "source": {"kind": "config", "ref": "data/tools/tools-extra.json#tool-list-resources", "trusted": true}
+    },
+    {
+      "id": "tool-query-cloud",
+      "name": "query_cloud",
+      "description_untrusted": "Executes a cloud control-plane operation. The operation string is passed through to the cloud API, and operations are not restricted to read-only calls by the tool itself.",
+      "actions": ["READ", "EXECUTE"],
+      "action_evidence": [
+        {"action": "READ", "method": "name_match", "span": "query", "needs_llm_review": false},
+        {"action": "EXECUTE", "method": "description_keyword", "span": "executes a cloud control-plane operation", "needs_llm_review": true, "notes": "Free-form operation string; the tool contract cannot exclude IAM mutation operations."}
+      ],
+      "targets": [],
+      "target_selector": {"param": "op", "values": [], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"op": {"type": "string"}, "args": {"type": "object"}}},
+      "side_effect": true,
+      "destructive": false,
+      "reversible": null,
+      "source": {"kind": "tool_description", "ref": "data/tools/tools-extra.json#tool-query-cloud", "trusted": false}
+    },
+    {
+      "id": "tool-read-env",
+      "name": "read_env",
+      "description_untrusted": "Reads environment variables of the agent process and returns the matching values.",
+      "actions": ["READ"],
+      "action_evidence": [{"action": "READ", "method": "name_match", "span": "reads environment variables", "needs_llm_review": false}],
+      "targets": [],
+      "target_selector": {"param": "name", "values": [], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"name": {"type": "string"}}},
+      "side_effect": false,
+      "destructive": false,
+      "reversible": null,
+      "source": {"kind": "config", "ref": "data/tools/tools-extra.json#tool-read-env", "trusted": true}
+    },
+    {
+      "id": "tool-http-request",
+      "name": "http_request",
+      "description_untrusted": "Performs an HTTP request to an allowed internal endpoint. The request body and method are supplied by the caller, so the tool can drive any API the network permits. The CI pipeline, once queried, reports the deployment endpoints it can reach.",
+      "actions": ["READ", "EXECUTE"],
+      "action_evidence": [
+        {"action": "READ", "method": "name_match", "span": "request", "needs_llm_review": false},
+        {"action": "EXECUTE", "method": "description_keyword", "span": "can drive any API the network permits", "needs_llm_review": true}
+      ],
+      "targets": [],
+      "target_selector": {"param": "url", "values": [], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"url": {"type": "string"}, "method": {"type": "string"}, "body": {"type": "object"}}},
+      "preconditions": [{"kind": "session_fact", "ref": "fact:discovered_endpoints", "note": "The tool can only address endpoints the agent has already discovered in this session, so its capability surface grows with session state."}],
+      "side_effect": true,
+      "destructive": false,
+      "reversible": null,
+      "source": {"kind": "mcp_metadata", "ref": "data/tools/tools-extra.json#tool-http-request", "trusted": false}
+    }
+  ]
+}

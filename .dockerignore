@@ -1,0 +1,71 @@
+# =============================================================================
+# Agent Blast-Radius Analyzer — .dockerignore
+#
+# The build context is the project directory, which also holds a ~388 MB
+# virtualenv and several tool caches. Without this file every build uploads all
+# of it to the daemon before the first COPY even runs.
+#
+# Nothing here may exclude what the Dockerfile COPYs: app/, data/, gradio_app/,
+# docs/, tests/, requirements.txt, pyproject.toml, README.md.
+# =============================================================================
+
+# --- The local virtualenv (recreate with scripts/setup_env.ps1) ---
+Agent3/
+venv/
+.venv/
+env/
+ENV/
+
+# --- Python build artifacts and caches ---
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# --- Tool caches ---
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+coverage.xml
+junit*.xml
+
+# --- Secrets: stay out of the layer history, not just out of git ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+*.secret
+
+# --- Run outputs: mounted as a volume at runtime, never baked in ---
+artifacts/
+outputs/
+reports/
+*.log
+
+# --- VCS, IDE, and agent state ---
+.git/
+.gitignore
+.github/
+.vscode/
+.kilo/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# --- Not needed to build the image ---
+scripts/
+Dockerfile
+docker-compose.yml
+.dockerignore
+.dockerignore.local

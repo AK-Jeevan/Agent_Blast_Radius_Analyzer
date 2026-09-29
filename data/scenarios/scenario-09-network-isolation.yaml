@@ -1,0 +1,35 @@
+id: scenario-09-network-isolation
+title: "Credential without a route: declared authority is not effective capability"
+difficulty: medium
+tags: [network_isolation, contradiction, false_positive_guard]
+environment: env-dev
+agent: agent-coding-01
+tools: [tool-read-db]
+credentials: [cred-dev-token, cred-prod-read-token]
+resources: [res-dev-db, res-prod-db]
+permissions: [pol-dev-readonly, pol-prod-readonly]
+network: [net-agent-to-dev-db, net-agent-to-prod-db]
+blockers: []
+expectations:
+  must_find_capabilities:
+    - action: READ
+      target: res-dev-db
+      environment: development
+      min_severity: INFO
+      via: [tool-read-db, cred-dev-token]
+      note: "The development read is real and reachable; it is the control for this scenario."
+  must_not_find_capabilities:
+    - action: READ
+      target: res-prod-db
+      note: >
+        The production read token is present and the production read permission exists, but the
+        network route is explicitly denied, so reading production data is NOT an effective
+        capability. Reporting it would be a false positive.
+  expected_uncertainties: []
+  expected_contradictions: [AUTHORITY_UNREACHABLE]
+  expected_baseline_misses: []
+  max_severity: LOW
+  min_severity: INFO
+  notes: >
+    This scenario exists to punish false positives: declared authority (production read) is present,
+    but effective reachability is absent. The correct output is a contradiction, not a HIGH finding.

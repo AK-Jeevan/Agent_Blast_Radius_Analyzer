@@ -1,0 +1,117 @@
+{
+  "resources": [
+    {
+      "id": "res-dev-api",
+      "name": "dev-api",
+      "type": "service",
+      "environment": "development",
+      "data_class": "internal",
+      "criticality": 1,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["supervisor"], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-dev-api", "trusted": true}
+    },
+    {
+      "id": "res-dev-db",
+      "name": "dev-db",
+      "type": "database",
+      "environment": "development",
+      "data_class": "internal",
+      "criticality": 1,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["snapshot"], "latest_recovery_point": "PT15M", "mean_time_to_recover": "PT10M", "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-dev-db", "trusted": true}
+    },
+    {
+      "id": "res-dev-storage",
+      "name": "dev-storage",
+      "type": "bucket",
+      "environment": "development",
+      "data_class": "internal",
+      "criticality": 1,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["versioning"], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-dev-storage", "trusted": true}
+    },
+    {
+      "id": "res-staging-api",
+      "name": "staging-api",
+      "type": "service",
+      "environment": "staging",
+      "data_class": "internal",
+      "criticality": 2,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["rollback"], "latest_recovery_point": null, "mean_time_to_recover": "PT30M", "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-staging-api", "trusted": true}
+    },
+    {
+      "id": "res-staging-db",
+      "name": "staging-db",
+      "type": "database",
+      "environment": "staging",
+      "data_class": "internal",
+      "criticality": 2,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["snapshot"], "latest_recovery_point": "PT1H", "mean_time_to_recover": "PT1H", "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-staging-db", "trusted": true}
+    },
+    {
+      "id": "res-staging-storage",
+      "name": "staging-storage",
+      "type": "bucket",
+      "environment": "staging",
+      "data_class": "internal",
+      "criticality": 2,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["versioning"], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-staging-storage", "trusted": true}
+    },
+    {
+      "id": "res-prod-api",
+      "name": "prod-api",
+      "type": "service",
+      "environment": "production",
+      "data_class": "confidential",
+      "criticality": 3,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["rollback"], "latest_recovery_point": null, "mean_time_to_recover": "PT20M", "evidence": []},
+      "dependents": ["res-prod-web"],
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-prod-api", "trusted": true}
+    },
+    {
+      "id": "res-prod-web",
+      "name": "prod-web",
+      "type": "service",
+      "environment": "production",
+      "data_class": "public",
+      "criticality": 3,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["rollback"], "latest_recovery_point": null, "mean_time_to_recover": "PT20M", "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-prod-web", "trusted": true}
+    },
+    {
+      "id": "res-prod-db",
+      "name": "prod-db",
+      "type": "database",
+      "environment": "production",
+      "data_class": "customer_pii",
+      "criticality": 3,
+      "recovery": {"recoverability": "difficult", "mechanisms": ["snapshot"], "latest_recovery_point": "PT24H", "mean_time_to_recover": "PT4H", "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-prod-db", "trusted": true}
+    },
+    {
+      "id": "res-prod-storage",
+      "name": "prod-storage",
+      "type": "bucket",
+      "environment": "production",
+      "data_class": "confidential",
+      "criticality": 3,
+      "recovery": {"recoverability": "recoverable", "mechanisms": ["versioning"], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-prod-storage", "trusted": true}
+    },
+    {
+      "id": "res-prod-backups",
+      "name": "prod-backups",
+      "type": "bucket",
+      "environment": "production",
+      "data_class": "customer_pii",
+      "criticality": 3,
+      "recovery": {"recoverability": "unknown", "mechanisms": [], "latest_recovery_point": null, "mean_time_to_recover": null, "evidence": []},
+      "backs_up": ["res-prod-db"],
+      "notes_untrusted": "Offline backup bucket for production data. It is the only recovery mechanism for prod-db, and it has no recovery mechanism of its own.",
+      "source": {"kind": "inventory", "ref": "data/resources/production.json#res-prod-backups", "trusted": true}
+    }
+  ]
+}

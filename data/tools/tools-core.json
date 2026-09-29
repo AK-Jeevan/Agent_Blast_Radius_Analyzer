@@ -1,0 +1,65 @@
+{
+  "tools": [
+    {
+      "id": "tool-read-file",
+      "name": "read_file",
+      "description_untrusted": "Reads a file from the agent workspace and returns its contents.",
+      "actions": ["READ"],
+      "action_evidence": [{"action": "READ", "method": "name_match", "span": "read", "needs_llm_review": false}],
+      "targets": ["res-git-repo"],
+      "target_selector": {"param": "path", "values": [], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"]},
+      "output_schema": {"type": "object", "properties": {"content": {"type": "string"}}},
+      "side_effect": false,
+      "destructive": false,
+      "reversible": null,
+      "source": {"kind": "config", "ref": "data/tools/tools-core.json#tool-read-file", "trusted": true}
+    },
+    {
+      "id": "tool-write-file",
+      "name": "write_file",
+      "description_untrusted": "Writes a file inside the agent workspace.",
+      "actions": ["WRITE", "CREATE"],
+      "action_evidence": [
+        {"action": "WRITE", "method": "name_match", "span": "write", "needs_llm_review": false},
+        {"action": "CREATE", "method": "name_match", "span": "writes a file", "needs_llm_review": false}
+      ],
+      "targets": ["res-git-repo"],
+      "target_selector": {"param": "path", "values": [], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"path": {"type": "string"}, "content": {"type": "string"}}},
+      "side_effect": true,
+      "destructive": false,
+      "reversible": true,
+      "source": {"kind": "config", "ref": "data/tools/tools-core.json#tool-write-file", "trusted": true}
+    },
+    {
+      "id": "tool-execute",
+      "name": "execute_command",
+      "description_untrusted": "Runs a shell command inside the agent sandbox and returns stdout.",
+      "actions": ["EXECUTE"],
+      "action_evidence": [{"action": "EXECUTE", "method": "name_match", "span": "execute", "needs_llm_review": false}],
+      "targets": [],
+      "target_selector": {"param": "command", "values": [], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"command": {"type": "string"}}},
+      "side_effect": true,
+      "destructive": true,
+      "reversible": false,
+      "blockers": ["blk-allowlist"],
+      "source": {"kind": "config", "ref": "data/tools/tools-core.json#tool-execute", "trusted": true}
+    },
+    {
+      "id": "tool-read-db",
+      "name": "read_database",
+      "description_untrusted": "Runs a SELECT query against the target database and returns rows.",
+      "actions": ["READ"],
+      "action_evidence": [{"action": "READ", "method": "name_match", "span": "read", "needs_llm_review": false}],
+      "targets": ["res-dev-db", "res-staging-db", "res-prod-db"],
+      "target_selector": {"param": "database", "values": ["dev-db", "staging-db", "prod-db"], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"database": {"type": "string"}, "query": {"type": "string"}}},
+      "side_effect": false,
+      "destructive": false,
+      "reversible": null,
+      "source": {"kind": "config", "ref": "data/tools/tools-core.json#tool-read-db", "trusted": true}
+    }
+  ]
+}

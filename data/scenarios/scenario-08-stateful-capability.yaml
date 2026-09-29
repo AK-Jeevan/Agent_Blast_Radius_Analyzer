@@ -1,0 +1,44 @@
+id: scenario-08-stateful-capability
+title: "A capability that only exists after discovery: state-dependent blast radius"
+difficulty: hard
+tags: [stateful, discovery, baseline_gap]
+environment: env-dev
+agent: agent-coding-01
+tools: [tool-list-resources, tool-http-request]
+credentials: [cred-dev-token]
+resources: [res-ci-pipeline, res-artifact-registry, res-logs-store]
+permissions: [pol-dev-read-shared]
+network: [net-agent-to-ci, net-agent-to-logs-store, net-agent-to-artifact-registry, net-agent-to-internet]
+blockers: []
+expectations:
+  must_find_capabilities:
+    - action: READ
+      target: res-ci-pipeline
+      environment: shared
+      min_severity: LOW
+      via: [tool-list-resources, tool-http-request]
+      min_state_depth: 1
+      note: >
+        The HTTP tool is state-gated: it can only address endpoints that were discovered first. The
+        capability therefore exists only in state >= 1, after list_resources has run.
+    - action: READ
+      target: res-artifact-registry
+      environment: shared
+      min_severity: LOW
+      via: [tool-list-resources, tool-http-request]
+  must_not_find_capabilities:
+    - action: WRITE
+      target: res-artifact-registry
+      note: "Read-only grant: nothing in scope grants write."
+    - action: DEPLOY
+      target: res-prod-api
+      note: "Production is not reachable and no production route is in scope."
+  expected_uncertainties: []
+  expected_contradictions: [ENVIRONMENT_BOUNDARY_VIOLATION]
+  expected_baseline_misses: []
+  max_severity: MEDIUM
+  min_severity: LOW
+  notes: >
+    Whether the baseline finds the state-gated capability is an empirical question answered by the
+    ablation run; expected_baseline_misses is updated from measurement, and the measurement is
+    recorded in data/scenarios/CHANGELOG.md.

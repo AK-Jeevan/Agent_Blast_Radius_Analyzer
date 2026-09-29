@@ -1,0 +1,38 @@
+id: scenario-10-delete-recoverable
+title: "Destructive but recoverable: delete the production database while a backup exists"
+difficulty: medium
+tags: [destructive, recoverability, severity_calibration]
+environment: env-prod
+agent: agent-coding-01
+tools: [tool-delete-resource]
+credentials: [cred-prod-admin]
+resources: [res-prod-db]
+permissions: [pol-prod-ops-admin]
+network: [net-agent-to-prod-db-open]
+blockers: []
+overrides:
+  tool-delete-resource:
+    targets: [res-prod-db]
+expectations:
+  must_find_capabilities:
+    - action: DELETE
+      target: res-prod-db
+      environment: production
+      min_severity: HIGH
+      max_severity: HIGH
+      via: [tool-delete-resource, cred-prod-admin]
+      note: >
+        Destroying the production database is HIGH, not CRITICAL, because a snapshot mechanism is
+        documented for this resource and no capability exists in this scenario to remove the backup.
+  must_not_find_capabilities:
+    - action: DESTROY
+      target: res-prod-db
+      note: "Irreversibility is not asserted while a recovery mechanism exists and is not deletable here."
+    - action: DELETE
+      target: res-prod-backups
+      note: "The backup bucket is deliberately out of this scenario's tool scope."
+  expected_uncertainties: [credential_expiry_unknown]
+  expected_contradictions: []
+  expected_baseline_misses: []
+  max_severity: HIGH
+  min_severity: HIGH

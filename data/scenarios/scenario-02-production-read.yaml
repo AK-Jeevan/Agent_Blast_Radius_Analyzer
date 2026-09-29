@@ -1,0 +1,33 @@
+id: scenario-02-production-read
+title: "Read-only production access: information exposure without write or exfiltration"
+difficulty: easy
+tags: [production, data_exposure, baseline_strength]
+environment: env-prod
+agent: agent-prod-read-01
+tools: [tool-read-db]
+credentials: [cred-prod-read-token]
+resources: [res-prod-db]
+permissions: [pol-prod-readonly]
+network: [net-prodread-to-prod-db, net-prodread-to-internet]
+blockers: [blk-dlp-egress, blk-masking]
+expectations:
+  must_find_capabilities:
+    - action: READ
+      target: res-prod-db
+      environment: production
+      min_severity: MEDIUM
+      via: [tool-read-db, cred-prod-read-token, ident-prod-readonly]
+      note: "Customer PII read in production; the DLP blocker prevents this from escalating further."
+  must_not_find_capabilities:
+    - action: EXFILTRATE
+      target: res-prod-db
+      note: "Internet egress exists, but DLP inspection blocks confidential/PII egress."
+    - action: WRITE
+      target: res-prod-db
+    - action: DELETE
+      target: res-prod-db
+  expected_uncertainties: []
+  expected_contradictions: []
+  expected_baseline_misses: []
+  max_severity: MEDIUM
+  min_severity: MEDIUM

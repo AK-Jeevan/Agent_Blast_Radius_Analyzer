@@ -1,0 +1,54 @@
+# =============================================================================
+# Local stack: API + demo UI from one image.
+#   docker compose up --build
+#   API: http://localhost:8000/docs      UI: http://localhost:7860
+# =============================================================================
+services:
+  api:
+    build: .
+    image: agent-blast-radius-analyzer:latest
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # The analyzer runs read-only; it needs no cloud credentials of any kind.
+      NVIDIA_API_KEY: ${NVIDIA_API_KEY:-}
+      NVIDIA_MODEL: ${NVIDIA_MODEL:-z-ai/glm-5.3-flash}
+      LLM_PREFER_REAL: ${LLM_PREFER_REAL:-true}
+      RUN_STORE_DIR: /app/artifacts/runs
+    volumes:
+      - runs:/app/artifacts
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import urllib.request, os, sys
+          sys.exit(0 if urllib.request.urlopen("http://127.0.0.1:8000/health", timeout=4).status == 200 else 1)
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+  ui:
+    build: .
+    image: agent-blast-radius-analyzer:latest
+    command: ["python", "gradio_app/app.py"]
+    ports:
+      - "7860:7860"
+    environment:
+      GRADIO_HOST: 0.0.0.0
+      GRADIO_PORT: "7860"
+      NVIDIA_API_KEY: ${NVIDIA_API_KEY:-}
+      LLM_PREFER_REAL: ${LLM_PREFER_REAL:-true}
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  runs:

@@ -1,0 +1,80 @@
+# =============================================================================
+# Agent Blast-Radius Analyzer — tooling configuration
+# (pytest + ruff only; the runtime dependencies live in requirements.txt)
+# =============================================================================
+
+[project]
+name = "agent-blast-radius-analyzer"
+version = "0.1.0"
+description = "Effective blast-radius analysis for AI agents: identities, tools, credentials, composition, and impact."
+# The floor is 3.11, not 3.10: app/schemas/common.py uses enum.StrEnum throughout, which is 3.11+.
+# ruff is pinned to py312 and the Dockerfile ships python:3.12-slim, so 3.12 is what CI and the
+# image actually exercise; stating the floor explicitly stops a 3.10 install failing at import time
+# with an error that looks unrelated to the version.
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.9,<3",
+    "networkx>=3.2,<4",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "python-multipart>=0.0.9",
+    "openai>=1.40",
+    "httpx>=0.27",
+    "gradio>=5.0",
+    "structlog>=24.1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24", "ruff>=0.6"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --strict-markers"
+markers = [
+    "unit: fast, no I/O",
+    "integration: crosses module boundaries",
+    "security: adversarial / injection / masking invariants",
+    "evaluation: scenario + ablation harness (may be slow)",
+]
+filterwarnings = [
+    "error::DeprecationWarning:app.*",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["app", "gradio_app", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # import sorting
+    "N",        # pep8-naming
+    "UP",       # pyupgrade
+    "B",        # flake8-bugbear
+    "C4",       # comprehensions
+    "SIM",      # simplify
+    "RUF",      # ruff-specific
+    "S",        # flake8-bandit (security linting of our own code)
+]
+ignore = [
+    "E501",   # line length is handled by the formatter
+    "S101",   # asserts are how our tests and invariant checks work
+    "UP047",  # PEP 695 generic syntax is not required for our small helpers
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "N"]
+"scripts/*" = ["S", "N"]
+# This module exists to *name* secret-ish patterns and key markers, so S105 (hardcoded
+# password string) is meaningless here; the patterns are detection rules, not credentials.
+"app/security/masking.py" = ["S105"]
+"app/schemas/common.py" = ["S105"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "gradio_app"]

@@ -1,0 +1,45 @@
+id: scenario-10b-delete-irreversible
+title: "Delete the database and its only backup: potentially irreversible destruction"
+difficulty: hard
+tags: [destructive, irreversible, derived_capability]
+environment: env-prod
+agent: agent-coding-01
+tools: [tool-delete-resource]
+credentials: [cred-prod-admin]
+resources: [res-prod-db, res-prod-backups]
+permissions: [pol-prod-ops-admin, pol-prod-delete-storage]
+network: [net-agent-to-prod-db-open, net-agent-to-prod-backups-open]
+blockers: []
+expectations:
+  must_find_capabilities:
+    - action: DELETE
+      target: res-prod-db
+      environment: production
+      min_severity: HIGH
+      via: [tool-delete-resource, cred-prod-admin]
+    - action: DELETE
+      target: res-prod-backups
+      environment: production
+      min_severity: HIGH
+      via: [tool-delete-resource, cred-prod-admin, pol-prod-delete-storage]
+      note: "The tool's allow-list includes the backup bucket used for lifecycle cleanup."
+    - action: DESTROY
+      target: res-prod-db
+      environment: production
+      min_severity: CRITICAL
+      via: [res-prod-backups]
+      note: >
+        Derived composite capability: the database can be deleted AND its only recovery mechanism can
+        be deleted by the same tool, so the outcome is potentially irreversible.
+  must_not_find_capabilities:
+    - action: READ
+      target: res-dev-storage
+      note: "No development capability belongs in this production scenario."
+    - action: GRANT
+      target: res-prod-db
+      note: "Grant authority is not exercised by this tool in scope."
+  expected_uncertainties: [credential_expiry_unknown, no_recovery_facts_for_res-prod-backups]
+  expected_contradictions: []
+  expected_baseline_misses: []
+  max_severity: CRITICAL
+  min_severity: HIGH

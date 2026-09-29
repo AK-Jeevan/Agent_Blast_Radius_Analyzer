@@ -1,0 +1,41 @@
+# =============================================================================
+# Agent Blast-Radius Analyzer - runtime + dev dependencies
+#
+# Environment: the `Agent3` venv in this repository
+#   python -m venv Agent3
+#   .\Agent3\Scripts\python.exe -m pip install -r requirements.txt
+#
+# NOTE (this machine): pip is configured with the NVIDIA PyIndex global config
+# (`pip.ini` under %USERPROFILE%\pip and %PROGRAMDATA%\pip) whose
+# `extra-index-url = https://pypi.ngc.nvidia.com` is not reachable here.
+# Neutralize it for installs with:
+#   $env:PIP_EXTRA_INDEX_URL='https://pypi.org/simple'
+#
+# Versions below are the exact set validated on Python 3.14.7 (Windows).
+# =============================================================================
+
+# --- Deterministic analysis core ---
+pydantic==2.13.5
+networkx==3.7
+PyYAML==6.0.3
+python-dotenv==1.2.3
+
+# --- API layer (Phase 12) ---
+fastapi==0.141.1
+uvicorn[standard]==0.54.0
+python-multipart==0.0.32
+
+# --- LLM reasoning layer: NVIDIA API (OpenAI-compatible) + GLM Flash (Phase 6) ---
+openai==3.19.2
+httpx==0.28.1
+
+# --- UI (Phase 13) ---
+gradio==6.28.0
+
+# --- Observability (Phase 17) ---
+structlog==26.1.0
+
+# --- Dev / QA ---
+pytest==9.1.1
+pytest-asyncio==1.4.0
+ruff==0.16.9

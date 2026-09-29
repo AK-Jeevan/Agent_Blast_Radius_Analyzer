@@ -1,0 +1,66 @@
+{
+  "tools": [
+    {
+      "id": "tool-write-db",
+      "name": "write_database",
+      "description_untrusted": "Runs a SQL statement against the target database. The statement is executed as provided, so DDL and destructive DML are possible even though the tool is presented as a writer.",
+      "actions": ["WRITE"],
+      "action_evidence": [{"action": "WRITE", "method": "name_match", "span": "write", "needs_llm_review": true, "notes": "Declared as a writer, but schema plus description imply arbitrary SQL including DELETE and DDL."}],
+      "targets": ["res-dev-db", "res-staging-db", "res-prod-db"],
+      "target_selector": {"param": "database", "values": ["dev-db", "staging-db", "prod-db"], "closed_vocabulary": false},
+      "input_schema": {"type": "object", "properties": {"database": {"type": "string"}, "query": {"type": "string"}}},
+      "side_effect": true,
+      "destructive": true,
+      "reversible": false,
+      "source": {"kind": "tool_description", "ref": "data/tools/tools-db-write.json#tool-write-db", "trusted": false}
+    },
+    {
+      "id": "tool-deploy",
+      "name": "deploy",
+      "description_untrusted": "Deploys the current revision to the selected environment.",
+      "actions": ["DEPLOY"],
+      "action_evidence": [{"action": "DEPLOY", "method": "name_match", "span": "deploys", "needs_llm_review": false}],
+      "targets": ["res-staging-api", "res-prod-api"],
+      "target_selector": {"param": "environment", "values": ["staging", "production"], "closed_vocabulary": true},
+      "input_schema": {"type": "object", "properties": {"environment": {"type": "string"}, "ref": {"type": "string"}, "dry_run": {"type": "boolean"}}},
+      "output_schema": {"type": "object", "properties": {"deployment_id": {"type": "string"}}},
+      "requires_credentials": ["cred-deploy-token"],
+      "preconditions": [{"kind": "credential_present", "ref": "cred-deploy-token", "note": "Deployment requires the CI deployment token."}],
+      "side_effect": true,
+      "destructive": false,
+      "reversible": true,
+      "blockers": ["blk-approval-prod", "blk-dryrun"],
+      "source": {"kind": "config", "ref": "data/tools/tools-db-write.json#tool-deploy", "trusted": true}
+    },
+    {
+      "id": "tool-rollback",
+      "name": "rollback",
+      "description_untrusted": "Rolls a deployment back to the previous revision.",
+      "actions": ["ROLLBACK"],
+      "action_evidence": [{"action": "ROLLBACK", "method": "name_match", "span": "rolls", "needs_llm_review": false}],
+      "targets": ["res-dev-api", "res-staging-api", "res-prod-api"],
+      "target_selector": {"param": "service", "values": ["dev-api", "staging-api", "prod-api"], "closed_vocabulary": true},
+      "input_schema": {"type": "object", "properties": {"service": {"type": "string"}, "to_revision": {"type": "string"}}},
+      "requires_credentials": ["cred-deploy-token"],
+      "side_effect": true,
+      "destructive": false,
+      "reversible": true,
+      "source": {"kind": "config", "ref": "data/tools/tools-db-write.json#tool-rollback", "trusted": true}
+    },
+    {
+      "id": "tool-delete-resource",
+      "name": "delete_resource",
+      "description_untrusted": "Deletes a cloud resource by identifier. The tool accepts any identifier in its allow-list, which currently spans storage buckets, the production database, and the offline backup bucket used for lifecycle cleanup.",
+      "actions": ["DELETE"],
+      "action_evidence": [{"action": "DELETE", "method": "name_match", "span": "deletes", "needs_llm_review": false}],
+      "targets": ["res-dev-storage", "res-prod-storage", "res-prod-db", "res-prod-backups"],
+      "target_selector": {"param": "resource_id", "values": ["res-dev-storage", "res-prod-storage", "res-prod-db", "res-prod-backups"], "closed_vocabulary": true},
+      "input_schema": {"type": "object", "properties": {"resource_id": {"type": "string"}, "force": {"type": "boolean"}}},
+      "side_effect": true,
+      "destructive": true,
+      "reversible": false,
+      "notes_untrusted": "Over-broad allow-list: the same tool that cleans up dev storage can delete the production database and its only backup.",
+      "source": {"kind": "tool_description", "ref": "data/tools/tools-db-write.json#tool-delete-resource", "trusted": false}
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "blockers": [
+    {
+      "id": "blk-approval-prod",
+      "name": "Production change approval gate",
+      "kind": "approval_gate",
+      "applies_to_actions": ["DEPLOY", "DELETE", "EXECUTE", "GRANT"],
+      "environments": ["env-prod"],
+      "effect_note": "Production deployment and deletion require a recorded human approval.",
+      "description_untrusted": "Approvals are recorded in the change-management system; production changes without an approval are rejected by the deploy service.",
+      "source": {"kind": "config", "ref": "data/blockers/blockers.json#blk-approval-prod", "trusted": true}
+    },
+    {
+      "id": "blk-dryrun",
+      "name": "Deploy dry-run support",
+      "kind": "dry_run",
+      "applies_to_actions": ["DEPLOY"],
+      "environments": ["env-prod", "env-staging"],
+      "effect_note": "The deploy tool supports a dry-run mode, so a change can be previewed before it lands.",
+      "source": {"kind": "config", "ref": "data/blockers/blockers.json#blk-dryrun", "trusted": true}
+    },
+    {
+      "id": "blk-allowlist",
+      "name": "Command allow-list",
+      "kind": "allow_list",
+      "applies_to_actions": ["EXECUTE"],
+      "environments": [],
+      "effect_note": "execute_command is restricted to a small allow-list of read-only binaries.",
+      "description_untrusted": "The wrapper refuses any binary outside the allow-list; pipelines cannot be chained with shell operators.",
+      "source": {"kind": "config", "ref": "data/blockers/blockers.json#blk-allowlist", "trusted": true}
+    },
+    {
+      "id": "blk-ratelimit-ci",
+      "name": "CI rate limit",
+      "kind": "rate_limit",
+      "applies_to_actions": ["DEPLOY", "EXECUTE"],
+      "environments": ["env-shared"],
+      "effect_note": "The CI API rate-limits deploy and job-trigger calls per token.",
+      "source": {"kind": "config", "ref": "data/blockers/blockers.json#blk-ratelimit-ci", "trusted": true}
+    },
+    {
+      "id": "blk-dlp-egress",
+      "name": "Egress data-loss inspection",
+      "kind": "dlp",
+      "applies_to_actions": ["READ", "EXFILTRATE"],
+      "environments": ["env-prod"],
+      "effect_note": "Egress traffic carrying confidential or PII-classified data is inspected and blocked.",
+      "source": {"kind": "config", "ref": "data/blockers/blockers.json#blk-dlp-egress", "trusted": true}
+    },
+    {
+      "id": "blk-masking",
+      "name": "Secret output masking",
+      "kind": "output_masking",
+      "applies_to_actions": ["READ"],
+      "environments": [],
+      "effect_note": "Secret stores return masked values; the agent can reference a secret but not read its contents.",
+      "source": {"kind": "config", "ref": "data/blockers/blockers.json#blk-masking", "trusted": true}
+    }
+  ]
+}

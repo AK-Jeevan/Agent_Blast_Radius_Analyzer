@@ -1,0 +1,40 @@
+{
+  "environments": [
+    {
+      "id": "env-dev",
+      "name": "development",
+      "tier": "development",
+      "criticality": 1,
+      "boundary": "dev-net",
+      "notes_untrusted": "Local development sandbox. Data here is disposable.",
+      "source": {"kind": "config", "ref": "data/environments/environments.json#env-dev", "trusted": true}
+    },
+    {
+      "id": "env-staging",
+      "name": "staging",
+      "tier": "staging",
+      "criticality": 2,
+      "boundary": "staging-net",
+      "notes_untrusted": "Pre-production mirror. Should contain no customer data.",
+      "source": {"kind": "config", "ref": "data/environments/environments.json#env-staging", "trusted": true}
+    },
+    {
+      "id": "env-prod",
+      "name": "production",
+      "tier": "production",
+      "criticality": 3,
+      "boundary": "prod-net",
+      "notes_untrusted": "Customer-facing production environment.",
+      "source": {"kind": "config", "ref": "data/environments/environments.json#env-prod", "trusted": true}
+    },
+    {
+      "id": "env-shared",
+      "name": "shared",
+      "tier": "unknown",
+      "criticality": 2,
+      "boundary": "shared-net",
+      "notes_untrusted": "Shared build/CI plumbing reachable from several environments; tier is not declared, so severity is deliberately not multiplied up.",
+      "source": {"kind": "config", "ref": "data/environments/environments.json#env-shared", "trusted": true}
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "permissions": [
+    {
+      "id": "pol-dev-readonly",
+      "principal": "ident-dev-agent",
+      "effect": "allow",
+      "actions": ["read"],
+      "resources": ["res-dev-*", "res-git-repo", "res-logs-store"],
+      "via": "cred-dev-token",
+      "evidence_note": "Development read access is scoped to development resources, the repository, and logs.",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-dev-readonly", "trusted": true}
+    },
+    {
+      "id": "pol-dev-write",
+      "principal": "ident-dev-agent",
+      "effect": "allow",
+      "actions": ["write", "create"],
+      "resources": ["res-dev-db", "res-dev-storage"],
+      "via": "cred-dev-token",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-dev-write", "trusted": true}
+    },
+    {
+      "id": "pol-dev-deny-prod",
+      "principal": "ident-dev-agent",
+      "effect": "deny",
+      "actions": ["*"],
+      "resources": ["res-prod-*"],
+      "evidence_note": "Explicit deny: the development agent must never touch production resources. Explicit deny wins over any allow.",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-dev-deny-prod", "trusted": true}
+    },
+    {
+      "id": "pol-staging-rw",
+      "principal": "ident-staging-agent",
+      "effect": "allow",
+      "actions": ["read", "write", "deploy"],
+      "resources": ["res-staging-*"],
+      "via": "cred-staging-token",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-staging-rw", "trusted": true}
+    },
+    {
+      "id": "pol-ci-read-shared",
+      "principal": "ident-deploy-svc",
+      "effect": "allow",
+      "actions": ["read"],
+      "resources": ["res-ci-pipeline", "res-artifact-registry", "res-logs-store"],
+      "via": "cred-deploy-token",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-ci-read-shared", "trusted": true}
+    },
+    {
+      "id": "pol-deploy-svc",
+      "principal": "ident-deploy-svc",
+      "effect": "allow",
+      "actions": ["deploy", "read:logs"],
+      "resources": ["res-staging-api", "res-prod-api"],
+      "conditions": [
+        {"kind": "source_ip_cidr", "value": "10.0.0.0/8", "note": "Deployments must originate from the internal build network."}
+      ],
+      "via": "cred-deploy-token",
+      "evidence_note": "The deployment service identity may deploy staging and production APIs when invoked from the internal network.",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-deploy-svc", "trusted": true}
+    },
+    {
+      "id": "pol-prod-readonly",
+      "principal": "ident-prod-readonly",
+      "effect": "allow",
+      "actions": ["read"],
+      "resources": ["res-prod-db", "res-prod-storage", "res-prod-api"],
+      "via": "cred-prod-read-token",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-prod-readonly", "trusted": true}
+    },
+    {
+      "id": "pol-prod-write",
+      "principal": "ident-prod-writer",
+      "effect": "allow",
+      "actions": ["read", "write"],
+      "resources": ["res-prod-db"],
+      "via": "cred-prod-write",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-prod-write", "trusted": true}
+    },
+    {
+      "id": "pol-prod-ops-admin",
+      "principal": "ident-prod-ops",
+      "effect": "allow",
+      "actions": ["*"],
+      "resources": ["res-prod-*"],
+      "via": "cred-prod-admin",
+      "evidence_note": "Break-glass operations role, granted only through temporary credentials.",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-prod-ops-admin", "trusted": true}
+    },
+    {
+      "id": "pol-prod-delete-storage",
+      "principal": "ident-prod-ops",
+      "effect": "allow",
+      "actions": ["delete"],
+      "resources": ["res-prod-storage", "res-prod-backups"],
+      "via": "cred-prod-admin",
+      "notes_untrusted": "Deleting backups is permitted for lifecycle cleanup. This is the single permission that can turn a recoverable deletion into an irreversible one.",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-prod-delete-storage", "trusted": true}
+    },
+    {
+      "id": "pol-mcp-claimed-admin",
+      "principal": "ident-dev-agent",
+      "effect": "deny",
+      "actions": ["*"],
+      "resources": ["res-secret-store", "res-metadata-endpoint"],
+      "evidence_note": "The development agent is explicitly denied access to secret/material resources. The MCP tool metadata claims otherwise; structured policy wins.",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-mcp-claimed-admin", "trusted": true}
+    },
+    {
+      "id": "pol-dev-read-shared",
+      "principal": "ident-dev-agent",
+      "effect": "allow",
+      "actions": ["read"],
+      "resources": ["res-artifact-registry", "res-logs-store", "res-ci-pipeline"],
+      "via": "cred-dev-token",
+      "evidence_note": "Read access to shared build artefacts and pipeline metadata; this is what makes discovery of shared resources possible.",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-dev-read-shared", "trusted": true}
+    },
+    {
+      "id": "pol-dev-deploy-staging",
+      "principal": "ident-dev-agent",
+      "effect": "allow",
+      "actions": ["deploy"],
+      "resources": ["res-staging-api"],
+      "via": "cred-deploy-token",
+      "evidence_note": "Development agents may deploy to staging through the CI deployment token.",
+      "source": {"kind": "iam_export", "ref": "data/permissions/permissions.json#pol-dev-deploy-staging", "trusted": true}
+    }
+  ]
+}
