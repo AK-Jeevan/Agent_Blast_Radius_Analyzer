@@ -48,6 +48,21 @@ services:
     depends_on:
       api:
         condition: service_healthy
+    # The image's own HEALTHCHECK probes the API on port 8000, which this service does not run, so
+    # without this override the UI container reports ``(unhealthy)`` from the moment it starts even
+    # while it is serving requests. Probe the interface this service actually runs instead.
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import urllib.request, sys
+          sys.exit(0 if urllib.request.urlopen("http://127.0.0.1:7860/", timeout=4).status == 200 else 1)
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
 
 volumes:
