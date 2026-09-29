@@ -326,7 +326,9 @@ class ResourceType(StrEnum):
     BUCKET = "bucket"
     REPOSITORY = "repository"
     PIPELINE = "pipeline"
-    SECRET_STORE = "secret_store"
+    # The value reads like a password to B105; it is the name of a resource *type*, matched against
+    # data/resources. pyproject.toml exempts this same false positive for this file as ruff S105.
+    SECRET_STORE = "secret_store"  # nosec B105
     QUEUE = "queue"
     COMPUTE = "compute"
     ENDPOINT = "endpoint"
@@ -344,7 +346,8 @@ class DataClass(StrEnum):
     INTERNAL = "internal"
     CONFIDENTIAL = "confidential"
     CUSTOMER_PII = "customer_pii"
-    SECRET_MATERIAL = "secret_material"
+    # A label for the data class, not credential material -- see the note on ResourceType above.
+    SECRET_MATERIAL = "secret_material"  # nosec B105
     UNKNOWN = "unknown"
 
     @classmethod
@@ -359,12 +362,15 @@ SENSITIVE_DATA_CLASSES: frozenset[DataClass] = frozenset(
 
 
 class CredentialType(StrEnum):
+    # Every value here names a credential *kind* from the corpus vocabulary; none of them is material.
+    # B105 cannot tell a label from a secret, so each line carries its own marker rather than a
+    # rule-wide skip that would also silence a genuinely hardcoded password elsewhere in app/.
     API_KEY = "api_key"
-    ACCESS_TOKEN = "access_token"
-    OAUTH_TOKEN = "oauth_token"
-    SERVICE_TOKEN = "service_token"
+    ACCESS_TOKEN = "access_token"  # nosec B105
+    OAUTH_TOKEN = "oauth_token"  # nosec B105
+    SERVICE_TOKEN = "service_token"  # nosec B105
     ENV_VAR = "env_var"
-    MOUNTED_SECRET = "mounted_secret"
+    MOUNTED_SECRET = "mounted_secret"  # nosec B105
     TEMP_CREDENTIAL = "temp_credential"
     UNKNOWN = "unknown"
 

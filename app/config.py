@@ -95,9 +95,13 @@ class Settings(BaseModel):
     min_facts_for_high_severity: int = 2
 
     # --- infra ---
-    api_host: str = "0.0.0.0"  # noqa: S104 - container default, documented in .env.example
+    # Binding all interfaces is the intended container default rather than an oversight: both services
+    # sit behind the published compose ports, and this host stays overridable via API_HOST (the same
+    # applies to GRADIO_HOST below). Ruff's twin of this false positive is already suppressed inline as
+    # S104, but bandit does not read ruff's noqa comments, so each line carries bandit's marker too.
+    api_host: str = "0.0.0.0"  # noqa: S104  # nosec B104
     api_port: int = 8000
-    gradio_host: str = "0.0.0.0"  # noqa: S104
+    gradio_host: str = "0.0.0.0"  # noqa: S104  # nosec B104
     gradio_port: int = 7860
     analyzer_api_url: str = "http://127.0.0.1:8000"
     run_store_dir: str = "artifacts/runs"
@@ -151,9 +155,10 @@ def get_settings() -> Settings:
         max_state_depth=_env_int("MAX_STATE_DEPTH", 4),
         max_paths_per_query=_env_int("MAX_PATHS_PER_QUERY", 200),
         min_facts_for_high_severity=_env_int("MIN_FACTS_FOR_HIGH_SEVERITY", 2),
-        api_host=_env_str("API_HOST", "0.0.0.0"),  # noqa: S104
+        # The same container defaults as the field declarations above, applied to the env overrides.
+        api_host=_env_str("API_HOST", "0.0.0.0"),  # noqa: S104  # nosec B104
         api_port=_env_int("API_PORT", 8000),
-        gradio_host=_env_str("GRADIO_HOST", "0.0.0.0"),  # noqa: S104
+        gradio_host=_env_str("GRADIO_HOST", "0.0.0.0"),  # noqa: S104  # nosec B104
         gradio_port=_env_int("GRADIO_PORT", 7860),
         analyzer_api_url=_env_str("ANALYZER_API_URL", "http://127.0.0.1:8000"),
         run_store_dir=_env_str("RUN_STORE_DIR", "artifacts/runs"),

@@ -55,7 +55,10 @@ class RunStore:
 
     # --- persistence --------------------------------------------------------------------
     def _write(self, report: AnalysisReport) -> None:
-        assert self.directory is not None
+        # Narrows the Optional for the type checker and asserts the caller honoured the contract.
+        # Asserts are this project's documented invariant mechanism (pyproject.toml ignores S101 for
+        # ruff); bandit does not read ruff's noqa comments, so B101 needs a marker of its own.
+        assert self.directory is not None  # nosec B101
         self.directory.mkdir(parents=True, exist_ok=True)
         payload = redact_mapping(report.model_dump(mode="json", exclude_none=True))
         text = json.dumps(payload, indent=2, default=str)
